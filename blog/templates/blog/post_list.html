@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post List</title>
+    <style>
+        .pagination {
+            margin: 20px 0;
+        }
+        .pagination a, .pagination span {
+            margin: 0 5px;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        .pagination a:hover {
+            background-color: #f0f0f0;
+        }
+        .pagination .current {
+            font-weight: bold;
+            background-color: #333;
+            color: #fff;
+        }
+        .pagination .step-links a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    {% extends "base.html" %}
+
+{% block content %}
+     {% if user.is_authenticated %}
+            <p><a href="{% url 'create_post' %}">Create a new post</a></p>
+        {% else %}
+            <p>You need to <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to create a post.</p>
+        {% endif %}
+    <h1>All Posts</h1>
+    <ul>
+        {% for post in page_obj %}
+            <li>
+                <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                <p>By {{ post.author.username }} on {{ post.created_at }}</p>
+                {% if user == post.author %}
+                    <a href="{% url 'post_edit' post.id %}">Edit</a>
+                    <a href="{% url 'post_delete' post.id %}">Delete</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+</body>
+</html>
