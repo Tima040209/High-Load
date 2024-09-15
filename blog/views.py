@@ -8,11 +8,10 @@ from django.shortcuts import render, redirect
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-# List view to show all posts
 
 def post_list(request):
     posts = Post.objects.all()
-    paginator = Paginator(posts, 5)  # Show 5 posts per page
+    paginator = Paginator(posts, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'blog/post_list.html', {'page_obj': page_obj})
