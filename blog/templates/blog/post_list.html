@@ -5,27 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Post List</title>
     <style>
-        .pagination {
-            margin: 20px 0;
-        }
-        .pagination a, .pagination span {
-            margin: 0 5px;
-            padding: 8px 12px;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        .pagination a:hover {
-            background-color: #f0f0f0;
-        }
-        .pagination .current {
-            font-weight: bold;
-            background-color: #333;
-            color: #fff;
-        }
-        .pagination .step-links a {
-            text-decoration: none;
-        }
+        .post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.btn-create {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-create:hover {
+    background-color: #45a049;
+}
+
+/* Стили для списка постов */
+.post-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.post-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.post-title {
+    font-size: 20px;
+    color: #333;
+    text-decoration: none;
+}
+
+.post-title:hover {
+    text-decoration: underline;
+}
+
+.post-meta {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Стили для действий с постом */
+.post-actions {
+    margin-top: 10px;
+}
+
+.btn-edit, .btn-delete {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: #fff;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.btn-edit {
+    background-color: #4CAF50;
+}
+
+.btn-edit:hover {
+    background-color: #45a049;
+}
+
+.btn-delete {
+    background-color: #f44336;
+}
+
+.btn-delete:hover {
+    background-color: #e53935;
+}
+
+/* Стили для пагинации */
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.step-links a {
+    margin: 0 5px;
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.step-links a:hover {
+    text-decoration: underline;
+}
+
+.current {
+    margin: 0 5px;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>
@@ -33,43 +111,41 @@
     {% extends "base.html" %}
 
 {% block content %}
-     {% if user.is_authenticated %}
-            <p><a href="{% url 'create_post' %}">Create a new post</a></p>
+    <div class="post-container">
+        {% if user.is_authenticated %}
+            <p><a href="{% url 'create_post' %}" class="btn-create">Create a new post</a></p>
         {% else %}
             <p>You need to <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to create a post.</p>
         {% endif %}
-    <h1>All Posts</h1>
-    <ul>
-        {% for post in page_obj %}
-            <li>
-                <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
-                <p>By {{ post.author.username }} on {{ post.created_at }}</p>
-                {% if user == post.author %}
-                    <a href="{% url 'post_edit' post.id %}">Edit</a>
-                    <a href="{% url 'post_delete' post.id %}">Delete</a>
+        <h1>All Posts</h1>
+        <ul class="post-list">
+            {% for post in page_obj %}
+                <li class="post-item">
+                    <a href="{% url 'post_detail' post.id %}" class="post-title">{{ post.title }}</a>
+                    <p class="post-meta">By {{ post.author.username }} on {{ post.created_at }}</p>
+                    {% if user == post.author %}
+                        <div class="post-actions">
+                            <a href="{% url 'post_edit' post.id %}" class="btn-edit">Edit</a>
+                            <a href="{% url 'post_delete' post.id %}" class="btn-delete">Delete</a>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
                 {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endblock %}
-
-    <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
             </span>
-
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
+        </div>
     </div>
-
-</body>
-</html>
+{% endblock %}

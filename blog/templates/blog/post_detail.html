@@ -5,7 +5,6 @@
     <p>By {{ post.author.username }} on {{ post.created_at }}</p>
     <div>{{ post.content }}</div>
     <a href="{% url 'post_list' %}">Back to All Posts</a>
-
     <h2>Comments</h2>
     <ul>
         {% for comment in post.comments.all %}
@@ -14,7 +13,6 @@
             </li>
         {% endfor %}
     </ul>
-
     {% if user.is_authenticated %}
         <h3>Add a Comment</h3>
         <form method="post" action="{% url 'post_detail' post.id %}">
@@ -26,6 +24,3 @@
         <p>Please <a href="{% url 'login' %}">log in</a> to add a comment.</p>
     {% endif %}
 {% endblock %}
-
-
-

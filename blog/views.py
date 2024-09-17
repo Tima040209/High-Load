@@ -17,7 +17,6 @@ def post_list(request):
     return render(request, 'blog/post_list.html', {'page_obj': page_obj})
 
 
-@login_required
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
